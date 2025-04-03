@@ -6,6 +6,7 @@ from datetime import datetime
 import pandas as pd
 import csv
 import streamlit as st
+import numpy
 
 
 def get_menu(date, locationID, mealID):
@@ -34,41 +35,75 @@ date = str(date)
 #url_file = write_menus("wellesley-dining.csv", date)
 
 dining_hall = st.selectbox("Dining Hall: ", ["Lulu", "Tower", "Stone D", "Bates"])
+meal = st.selectbox("Meal: ", ["Breakfast", "Lunch", "Dinner"])
+
 locationID = 0
 mealID = 0
 
+meals = pd.read_csv("wellesley-meals.csv")
 ids = pd.read_csv("wellesley-dining.csv")
 
 
 if dining_hall == "Lulu":
     locationID = ids.loc[0]["locationId"]
+    if meal == "Breakfast":
+        mealID = ids.loc[0]["mealID"]
+    elif meal == "Lunch":
+        mealID = ids.loc[1]["mealID"]
+    elif meal == "Dinner":
+        mealID = ids.loc[2]["mealID"]
 
 if dining_hall == "Tower":
     locationID = ids.loc[9]["locationId"]
+    if meal == "Breakfast":
+        mealID = ids.loc[9]["mealID"]
+    elif meal == "Lunch":
+        mealID = ids.loc[10]["mealID"]
+    elif meal == "Dinner":
+        mealID = ids.loc[11]["mealID"]
 
 if dining_hall == "Bates":
     locationID = ids.loc[3]["locationId"]
+    if meal == "Breakfast":
+        mealID = ids.loc[3]["mealID"]
+    elif meal == "Lunch":
+        mealID = ids.loc[4]["mealID"]
+    elif meal == "Dinner":
+        mealID = ids.loc[5]["mealID"]
 
 if dining_hall == "Stone D":
     locationID = ids.loc[6]["locationId"]
+    if meal == "Breakfast":
+        mealID = ids.loc[6]["mealID"]
+    elif meal == "Lunch":
+        mealID = ids.loc[7]["mealID"]
+    elif meal == "Dinner":
+        mealID = ids.loc[8]["mealID"]
 
-st.write(locationID)
+#st.write(locationID)
+#st.write(mealID)
 
-#with open("wellesley-dining.csv", "r") as wd:
-    #wd_Dict = csv.DictReader(wd)
+menu = pd.DataFrame(get_menu(date, locationID, mealID))
 
-    #result = pd.DataFrame()
-    #for item in wd_Dict:
-        #with open(f"{item["location"]}-{item["meal"]}-02-20-2025.json", "r") as menu:
-            #data = json.load(menu)
-            #newdf = pd.DataFrame(data)
-            #result = pd.concat([result, newdf], ignore_index=True)
-            #print(f"Appended {item["location"]}-{item["meal"]}-02-20-2025.json. Now size is {result.shape}")
+displayMenu = menu.drop(columns = ["id", "image", "categoryName", "stationOrder", "allergens", "preferences", "price", "nutritionals"])
 
-#result.head()
-#columns = result.columns
-#betterNowDF = result.drop(columns = ['image', 'description',  'categoryName',
-       #'stationName', 'stationOrder', 'allergens', 'preferences', 'price',
-       #'nutritionals'], inplace = False)
 
-#print(betterNowDF.head(100))
+#result = pd.DataFrame(columns = ["name", "date", "description", "stationName"])
+
+resulty = []
+
+for i in range(len(displayMenu)):
+    row = displayMenu.iloc[i]
+    if date in row["date"]:
+        resulty.append(row)
+        #st.write(row["name"])
+        #result = result.add(row)
+
+result = pd.DataFrame(resulty)
+    
+
+st.write(result, columns = ["name", "date", "description", "stationName"])
+
+
+
+
